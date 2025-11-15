@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${appName}">Doc2FAQ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#" th:text="${appName}">
+                <i class="fas fa-file-alt me-2"></i>Doc2FAQ
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="display-4 fw-bold mb-4" th:text="${appName}">Doc2FAQ</h1>
+                    <p class="lead mb-4" th:text="${appDescription}">
+                        Transform your documents into comprehensive FAQ formats with ease. 
+                        Upload documents and let our intelligent system generate relevant questions and answers.
+                    </p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button class="btn btn-light btn-lg px-4 me-md-2" type="button">
+                            <i class="fas fa-upload me-2"></i>Get Started
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-4" type="button">
+                            <i class="fas fa-info-circle me-2"></i>Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-4 mb-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h4>Easy Upload</h4>
+                    <p class="text-muted">Simply upload your documents in various formats and let our system process them automatically.</p>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>Smart Processing</h4>
+                    <p class="text-muted">Our intelligent algorithms analyze your content and generate relevant questions and answers.</p>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h4>Export Results</h4>
+                    <p class="text-muted">Download your generated FAQ in multiple formats ready for use in your applications.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Section -->
+    <section class="bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-info-circle text-primary me-2"></i>Application Status</h5>
+                    <p class="mb-0">Version: <span class="badge bg-primary" th:text="${version}">1.0.0-SNAPSHOT</span></p>
+                    <p class="mb-0 text-success"><i class="fas fa-check-circle me-1"></i>Application is running successfully</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5><i class="fas fa-rocket text-success me-2"></i>Ready for Development</h5>
+                    <p class="mb-0">The application is ready to begin adding core features.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-muted mb-0">
+                        &copy; 2024 <span th:text="${appName}">Doc2FAQ</span>. 
+                        Built with <i class="fas fa-heart text-danger"></i> using Spring Boot.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
