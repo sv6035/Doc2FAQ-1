@@ -4,10 +4,12 @@ A Spring Boot web application designed to transform documents into comprehensive
 
 ## Features
 
-- **Easy Document Upload**: Support for various document formats
-- **Smart Processing**: Intelligent algorithms to analyze content and generate FAQs
-- **Export Functionality**: Download generated FAQs in multiple formats
-- **Responsive Web Interface**: Modern, user-friendly design
+- **File Upload**: Upload PDF, DOCX, and TXT files up to 10 MB
+- **Cloud Storage**: Secure file storage using Amazon S3
+- **File Validation**: Automatic validation of file types and sizes
+- **Unique File IDs**: Generate unique identifiers for uploaded files
+- **Responsive Web Interface**: Modern, user-friendly design with drag-and-drop upload
+- **Real-time Feedback**: Progress indicators and success/error messages
 - **RESTful API**: Ready for integration with other systems
 
 ## Technology Stack
@@ -18,6 +20,7 @@ A Spring Boot web application designed to transform documents into comprehensive
 - **Thymeleaf**: Template engine for web pages
 - **Bootstrap 5**: Frontend CSS framework
 - **Font Awesome**: Icons
+- **AWS SDK**: Amazon S3 integration for file storage
 
 ## Prerequisites
 
@@ -26,6 +29,33 @@ Before running this application, make sure you have the following installed:
 - **Java 17** or higher
 - **Maven 3.6+** (or use the Maven wrapper included in the project)
 - **Git** (for cloning the repository)
+- **AWS Account** with S3 access (for file upload functionality)
+
+## AWS Configuration
+
+To use the file upload feature, you need to configure AWS credentials. The application supports multiple credential sources:
+
+### Option 1: Environment Variables
+```bash
+export AWS_ACCESS_KEY_ID=your-access-key-id
+export AWS_SECRET_ACCESS_KEY=your-secret-access-key
+```
+
+### Option 2: AWS Credentials File
+Create `~/.aws/credentials` file:
+```ini
+[default]
+aws_access_key_id = your-access-key-id
+aws_secret_access_key = your-secret-access-key
+```
+
+### Option 3: IAM Roles (for EC2 instances)
+If running on EC2, attach an IAM role with S3 permissions.
+
+### S3 Bucket Setup
+Ensure the S3 bucket `bucket-name-51720177` exists and your AWS credentials have the following permissions:
+- `s3:PutObject`
+- `s3:PutObjectAcl`
 
 ## Getting Started
 
@@ -81,25 +111,33 @@ doc2faq/
 │   │   ├── java/
 │   │   │   └── com/
 │   │   │       └── docfaq/
-│   │   │           ├── Doc2FaqApplication.java      # Main application class
-│   │   │           └── controller/
-│   │   │               └── HomeController.java      # Home page controller
+│   │   │           ├── Doc2FaqApplication.java           # Main application class
+│   │   │           ├── config/
+│   │   │           │   └── AwsConfig.java                # AWS S3 configuration
+│   │   │           ├── controller/
+│   │   │           │   ├── HomeController.java           # Home page controller
+│   │   │           │   └── FileUploadController.java     # File upload API controller
+│   │   │           ├── service/
+│   │   │           │   ├── FileUploadService.java        # File upload business logic
+│   │   │           │   └── S3Service.java                # S3 operations service
+│   │   │           └── model/
+│   │   │               └── UploadResponse.java           # Upload response model
 │   │   └── resources/
 │   │       ├── templates/
-│   │       │   └── index.html                       # Landing page template
-│   │       ├── application.properties               # Application configuration
-│   │       └── static/                              # Static resources (CSS, JS, images)
+│   │       │   └── index.html                            # Landing page with upload form
+│   │       ├── application.properties                    # Application configuration
+│   │       └── static/                                   # Static resources (CSS, JS, images)
 │   └── test/
 │       ├── java/
 │       │   └── com/
 │       │       └── docfaq/
-│       │           └── Doc2FaqApplicationTests.java # Integration tests
+│       │           └── Doc2FaqApplicationTests.java      # Integration tests
 │       └── resources/
-│           └── application-test.properties          # Test configuration
-├── target/                                          # Build output (generated)
-├── pom.xml                                          # Maven configuration
-├── .gitignore                                       # Git ignore rules
-└── README.md                                        # This file
+│           └── application-test.properties               # Test configuration
+├── target/                                               # Build output (generated)
+├── pom.xml                                               # Maven configuration
+├── .gitignore                                            # Git ignore rules
+└── README.md                                             # This file
 ```
 
 ## Configuration
@@ -108,7 +146,69 @@ The application can be configured through the `application.properties` file loca
 
 - `server.port`: Application port (default: 8080)
 - `spring.application.name`: Application name
+- `spring.servlet.multipart.max-file-size`: Maximum file upload size (default: 10MB)
+- `spring.servlet.multipart.max-request-size`: Maximum request size (default: 10MB)
+- `aws.s3.bucket-name`: S3 bucket name for file storage
+- `aws.s3.region`: AWS region for S3 bucket
 - `logging.level.*`: Logging levels for different packages
+
+## API Endpoints
+
+Currently available endpoints:
+
+- `GET /`: Landing page with file upload interface
+- `POST /api/upload`: File upload endpoint
+  - Accepts: multipart/form-data with 'file' parameter
+  - Supported formats: PDF, DOCX, TXT
+  - Maximum size: 10 MB
+  - Returns: JSON response with upload status and file ID
+- `GET /api/upload/status`: Upload service health check
+
+### Upload API Response Format
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "message": "File uploaded successfully",
+  "fileId": "uuid-generated-id.pdf",
+  "fileName": "original-filename.pdf",
+  "fileSize": 1024000
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "Error description"
+}
+```
+
+## File Upload Feature
+
+### Supported File Types
+- **PDF**: `.pdf` files
+- **Word Documents**: `.docx` files  
+- **Text Files**: `.txt` files
+
+### File Size Limits
+- Maximum file size: 10 MB per file
+- Maximum request size: 10 MB
+
+### Upload Process
+1. User selects file via drag-and-drop or file browser
+2. Client-side validation checks file type and size
+3. File is uploaded to `/api/upload` endpoint
+4. Server validates file and uploads to S3
+5. Unique file ID is generated and returned
+6. User receives success confirmation with file ID
+
+### Error Handling
+- Invalid file types are rejected with clear error messages
+- Files exceeding size limits are rejected
+- Network errors are handled gracefully
+- S3 upload failures are reported to the user
 
 ## Development
 
@@ -136,12 +236,6 @@ The application is structured to easily accommodate new features:
 4. **Templates**: Add new Thymeleaf templates in `src/main/resources/templates/`
 5. **Static Resources**: Add CSS, JS, and images in `src/main/resources/static/`
 
-## API Endpoints
-
-Currently available endpoints:
-
-- `GET /`: Landing page with application information
-
 ## Troubleshooting
 
 ### Common Issues
@@ -157,6 +251,16 @@ Currently available endpoints:
 3. **Maven Issues**
    - Ensure Maven is properly installed
    - Try using the Maven wrapper: `./mvnw` instead of `mvn`
+
+4. **AWS Credentials Issues**
+   - Verify AWS credentials are properly configured
+   - Check S3 bucket exists and permissions are correct
+   - Test with: `aws s3 ls s3://bucket-name-51720177`
+
+5. **File Upload Issues**
+   - Check file size is under 10 MB limit
+   - Verify file type is PDF, DOCX, or TXT
+   - Ensure S3 bucket has proper write permissions
 
 ### Logs
 
@@ -180,4 +284,4 @@ For questions or issues, please create an issue in the project repository.
 
 ---
 
-**Status**: ✅ Application is ready for development and adding core features.
+**Status**: ✅ File upload feature implemented with S3 storage, validation, and responsive UI.
